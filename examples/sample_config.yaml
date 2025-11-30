@@ -1,0 +1,106 @@
+# GitIngest Példa Konfiguráció
+# Ez a fájl bemutatja a konfigurációs lehetőségeket
+
+# Projekt beállítások
+project:
+  name: "My Project"  # Projekt neve
+  output_format: "markdown"  # markdown vagy json
+  output_file: "project_summary.md"
+
+# Szűrési beállítások
+filters:
+  # Kizárt mappák - ezeket a mappákat teljesen kihagyja
+  exclude_dirs:
+    - "node_modules"
+    - "vendor"
+    - "build"
+    - "dist"
+    - ".git"
+    - ".idea"
+    - "__pycache__"
+    - ".vscode"
+    - "venv"
+    - "env"
+    - ".pytest_cache"
+    - "coverage"
+    - "htmlcov"
+  
+  # Kizárt fájlkiterjesztések - ezeket a fájlokat kihagyja
+  exclude_extensions:
+    - ".log"
+    - ".tmp"
+    - ".zip"
+    - ".tar"
+    - ".gz"
+    - ".min.js"
+    - ".lock"
+    - ".DS_Store"
+    - ".class"
+    - ".exe"
+    - ".dll"
+    - ".obj"
+    - ".pyc"
+    - ".pyo"
+    - ".pyd"
+    - ".wasm"
+    - ".bin"
+    - ".so"
+    - ".dylib"
+    - ".pdb"
+    - ".suo"
+    - ".user"
+    - ".userosscache"
+    - ".sln.docstates"
+  
+  # Maximális fájlméret (KB) - a nagyobb fájlokat kihagyja
+  max_file_size: 200
+  
+  # Bizalmas fájlok nevei - ezeket a fájlokat bizalmasnak jelöli
+  sensitive_patterns:
+    - "secret"
+    - "key"
+    - "credential"
+    - "password"
+    - ".env"
+    - ".env.local"
+    - ".env.development"
+    - ".env.test"
+    - ".env.production"
+    - "id_rsa"
+    - "id_dsa"
+    - "id_ecdsa"
+    - "id_ed25519"
+  
+  # Bizalmas tartalom minták (reguláris kifejezések)
+  # Ha egy fájl tartalmazza ezeket a mintákat, bizalmasnak jelöli
+  sensitive_content_patterns:
+    - "API_KEY\\s*="
+    - "api_key\\s*="
+    - "SECRET\\s*="
+    - "secret\\s*="
+    - "PASSWORD\\s*="
+    - "password\\s*="
+    - "TOKEN\\s*="
+    - "token\\s*="
+    - "CLIENT_SECRET\\s*="
+    - "client_secret\\s*="
+    - "PRIVATE_KEY\\s*="
+    - "private_key\\s*="
+    - "DATABASE_URL\\s*="
+    - "database_url\\s*="
+    - "-----BEGIN [A-Z]+ KEY-----"
+    - "-----BEGIN [A-Z]+ PRIVATE KEY-----"
+
+# Fájlfa beállítások
+tree:
+  max_depth: 5  # Maximális mélység a fában
+  show_hidden: false  # Rejtett fájlok mutatása
+  include_file_size: false  # Fájlméret mutatása a fában
+
+# Kimeneti beállítások
+output:
+  include_metadata: true  # Fájlméret, módosítás dátuma
+  include_file_stats: true  # Statisztikák include-olása
+  compress_long_files: false  # Hosszú fájlok tömörítése
+  max_content_lines: 5000  # Maximális sorok száma fájlonként
+  include_binary_info: true  # Információ a bináris fájlokról
