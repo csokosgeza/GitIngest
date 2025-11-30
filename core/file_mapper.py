@@ -156,14 +156,37 @@ class FileMapper:
             List[FileInfo]: Az összes fájl információja
         """
         files = []
+        excluded_dirs = set(self.config.get('filters', {}).get('exclude_dirs', []))
+        show_hidden = self.config.get('tree', {}).get('show_hidden', False)
         
         if self.verbose:
             print("Fájlok feltérképezése...")
+            print(f"Kizárt mappák: {excluded_dirs}")
+            print(f"Rejtett fájlok mutatása: {show_hidden}")
         
         try:
             for item in self.root_path.rglob('*'):
-                # Rejtett fájlok kezelése
-                if not self.config.get('tree', {}).get('show_hidden', False) and item.name.startswith('.'):
+                relative_path = item.relative_to(self.root_path)
+                path_parts = relative_path.parts
+                
+                # Rejtett fájlok és mappák kezelése
+                if not show_hidden:
+                    # Ellenőrizzük, hogy bármelyik rész rejtett-e
+                    if any(part.startswith('.') for part in path_parts):
+                        if self.verbose:
+                            print(f"  Rejtett útvonal kihagyva: {relative_path}")
+                        continue
+                
+                # Kizárt mappák kezelése
+                should_exclude = False
+                for part in path_parts[:-1]:  # Az utolsó rész a fájlnév/könyvtárnév
+                    if part in excluded_dirs:
+                        should_exclude = True
+                        break
+                
+                if should_exclude:
+                    if self.verbose:
+                        print(f"  Kizárt mappában lévő fájl kihagyva: {relative_path}")
                     continue
                 
                 file_info = FileInfo(item, self.root_path)
