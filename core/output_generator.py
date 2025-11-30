@@ -340,12 +340,16 @@ class OutputGenerator:
             elif file_content.is_binary:
                 file_data['binary'] = True
                 if file_content.database_info:
-                    file_data['database'] = {
+                    database_data = {
                         'type': file_content.database_info.db_type,
-                        'version': file_content.database_info.version,
                         'table_count': file_content.database_info.table_count,
                         'schema_info': file_content.database_info.schema_info
                     }
+                    # Verzió csak akkor, ha létezik
+                    if hasattr(file_content.database_info, 'version') and file_content.database_info.version:
+                        database_data['version'] = file_content.database_info.version
+                    
+                    file_data['database'] = database_data
                 elif file_content.content:
                     file_data['info'] = file_content.content
             else:

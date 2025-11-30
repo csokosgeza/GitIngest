@@ -105,3 +105,8 @@ output:
   max_content_lines: 5000  # Maximális sorok száma fájlonként
   include_binary_info: true  # Információ a bináris fájlokról
   analyze_databases: true  # Adatbázis fájlok elemzése metaadatok kinyeréséhez
+
+# Adatbázis elemzés beállítások
+database_analysis:
+  enabled: true  # Adatbázis elemzés engedélyezése
+  extract_schema: false  # Részletes séma kinyerése (lassabb lehet nagy adatbázisoknál)

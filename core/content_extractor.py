@@ -181,6 +181,12 @@ class ContentExtractor:
                     error="A fájl túl nagy (10MB feletti)"
                 )
             
+            # Adatbázis fájlok ellenőrzése - EZT MIELŐTT KELL TENNI, MINT A SZÖVEGES FELDOLGOZÁST
+            if self.analyze_databases and self.database_analyzer.is_database_file(file_info):
+                if self.verbose:
+                    print(f"  Adatbázis fájl észlelve: {file_info.relative_path}")
+                return self._create_binary_content(file_info)
+            
             # Karakterkódolás detektálása
             encoding = self._detect_encoding(file_info.path)
             
@@ -274,23 +280,48 @@ class ContentExtractor:
         content = None
         
         if self.analyze_databases:
-            database_info = self.database_analyzer.analyze_database(file_info.path)
+            database_info = self.database_analyzer.analyze_database(file_info)
             
             if database_info:
-                # Adatbázis információk hozzáadása a tartalomhoz
+                # Adatbázis információk hozzáadása a tartalomhoz - CSAK METAADATOK
                 content_lines = [
                     f"[Adatbázis fájl - {database_info.db_type}]",
-                    f"Méret: {file_info.size} bytes",
-                    f"Verzió: {database_info.version or 'Ismeretlen'}",
-                    ""
+                    f"Fájl mérete: {file_info.size} bytes"
                 ]
                 
+                # Verzió információ hozzáadása, ha elérhető
+                if hasattr(database_info, 'version') and database_info.version:
+                    content_lines.append(f"Verzió: {database_info.version}")
+                
+                # Táblák száma
                 if database_info.table_count is not None:
                     content_lines.append(f"Táblák száma: {database_info.table_count}")
                 
+                # Méret információk
+                if database_info.size_info:
+                    if 'page_size' in database_info.size_info:
+                        content_lines.append(f"Page méret: {database_info.size_info['page_size']} bytes")
+                    if 'page_count' in database_info.size_info:
+                        content_lines.append(f"Page-ek száma: {database_info.size_info['page_count']}")
+                    if 'estimated_size' in database_info.size_info:
+                        content_lines.append(f"Becsült adatbázis méret: {database_info.size_info['estimated_size']} bytes")
+                    if 'file_type' in database_info.size_info:
+                        content_lines.append(f"Fájl típus: {database_info.size_info['file_type']}")
+                
+                # Séma információk (csak összefoglaló, nem a teljes séma)
                 if database_info.schema_info:
-                    content_lines.append("Séma információ:")
-                    content_lines.append(database_info.schema_info)
+                    if isinstance(database_info.schema_info, dict):
+                        table_names = list(database_info.schema_info.keys())
+                        if table_names:
+                            content_lines.append(f"Táblák: {', '.join(table_names)}")
+                            # Oszlopok száma az első néhány táblához
+                            for table_name in table_names[:3]:  # Csak az első 3 tábla
+                                table_info = database_info.schema_info[table_name]
+                                if 'columns' in table_info and isinstance(table_info['columns'], list):
+                                    content_lines.append(f"  - {table_name}: {len(table_info['columns'])} oszlop")
+                    else:
+                        # Ha a schema_info string formátumú
+                        content_lines.append("Séma információk elérhetők")
                 
                 content = "\n".join(content_lines)
             elif self.include_binary_info:
