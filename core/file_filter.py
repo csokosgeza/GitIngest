@@ -70,6 +70,7 @@ class FileFilter:
         
         if self.verbose:
             print("Fájlok szűrése...")
+            print(f"Kizárt mappák: {self.exclude_dirs}")
         
         for file_info in files:
             # Csak fájlokat dolgozunk fel (a könyvtárakat a fájlfa generálásánál kezeljük)
@@ -132,7 +133,7 @@ class FileFilter:
             print(f"  Kizárva kiterjesztés alapján: {excluded_by_ext}")
             print(f"  Kizárva méret alapján: {excluded_by_size}")
             print(f"  Kizárva bizalmas fájlnév alapján: {excluded_by_sensitive}")
-            print(f"  Kizárva bizalmas tartalom alapán: {excluded_by_content}")
+            print(f"  Kizárva bizalmas tartalom alapján: {excluded_by_content}")
             print(f"  Feldolgozott fájlok: {len(filtered_files)}")
         
         return filtered_files
@@ -149,9 +150,23 @@ class FileFilter:
         """
         parts = file_info.relative_path.parts
         
+        if self.verbose:
+            print(f"    Ellenőrzés: {file_info.relative_path}")
+            print(f"    Útvonal részei: {parts}")
+        
         for part in parts[:-1]:  # Az utolsó rész a fájlnév
             if part in self.exclude_dirs:
+                if self.verbose:
+                    print(f"    Kizárt mappa található: {part}")
                 return True
+        
+        # Rejtett mappák kezelése (ha a show_hidden nincs engedélyezve)
+        if not self.config.get('tree', {}).get('show_hidden', False):
+            for part in parts[:-1]:  # Az utolsó rész a fájlnév
+                if part.startswith('.'):
+                    if self.verbose:
+                        print(f"    Rejtett mappa található: {part}")
+                    return True
         
         return False
     
