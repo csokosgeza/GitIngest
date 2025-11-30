@@ -1,0 +1,107 @@
+# GitIngest Alapértelmezett Konfiguráció
+
+# Projekt beállítások
+project:
+  name: "Auto-detected"  # Projekt neve
+  output_format: "markdown"  # markdown vagy json
+  output_file: "app_summary.md"
+
+# Szűrési beállítások
+filters:
+  # Kizárt mappák
+  exclude_dirs:
+    - "node_modules"
+    - "vendor"
+    - "build"
+    - "dist"
+    - ".git"
+    - ".idea"
+    - "__pycache__"
+    - ".vscode"
+    - "venv"
+    - "env"
+    - ".pytest_cache"
+    - ".mypy_cache"
+    - "coverage"
+    - ".coverage"
+    - "htmlcov"
+  
+  # Kizárt fájlkiterjesztések
+  exclude_extensions:
+    - ".log"
+    - ".tmp"
+    - ".zip"
+    - ".tar"
+    - ".gz"
+    - ".min.js"
+    - ".lock"
+    - ".DS_Store"
+    - ".class"
+    - ".exe"
+    - ".dll"
+    - ".obj"
+    - ".pyc"
+    - ".pyo"
+    - ".pyd"
+    - ".wasm"
+    - ".bin"
+    - ".so"
+    - ".dylib"
+    - ".pdb"
+    - ".suo"
+    - ".user"
+    - ".userosscache"
+    - ".sln.docstates"
+  
+  # Maximális fájlméret (KB)
+  max_file_size: 200
+  
+  # Bizalmas fájlok nevei
+  sensitive_patterns:
+    - "secret"
+    - "key"
+    - "credential"
+    - "password"
+    - ".env"
+    - ".env.local"
+    - ".env.development"
+    - ".env.test"
+    - ".env.production"
+    - "id_rsa"
+    - "id_dsa"
+    - "id_ecdsa"
+    - "id_ed25519"
+  
+  # Bizalmas tartalom minták (reguláris kifejezések)
+  sensitive_content_patterns:
+    - "API_KEY\\s*="
+    - "api_key\\s*="
+    - "SECRET\\s*="
+    - "secret\\s*="
+    - "PASSWORD\\s*="
+    - "password\\s*="
+    - "TOKEN\\s*="
+    - "token\\s*="
+    - "CLIENT_SECRET\\s*="
+    - "client_secret\\s*="
+    - "PRIVATE_KEY\\s*="
+    - "private_key\\s*="
+    - "DATABASE_URL\\s*="
+    - "database_url\\s*="
+    - "-----BEGIN [A-Z]+ KEY-----"
+    - "-----BEGIN [A-Z]+ PRIVATE KEY-----"
+
+# Fájlfa beállítások
+tree:
+  max_depth: 5
+  show_hidden: false
+  include_file_size: false
+
+# Kimeneti beállítások
+output:
+  include_metadata: true  # Fájlméret, módosítás dátuma
+  include_file_stats: true
+  compress_long_files: false  # Hosszú fájlok tömörítése
+  max_content_lines: 5000  # Maximális sorok száma fájlonként
+  include_binary_info: true  # Információ a bináris fájlokról
+  analyze_databases: true  # Adatbázis fájlok elemzése metaadatok kinyeréséhez
